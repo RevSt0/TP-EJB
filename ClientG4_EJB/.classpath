@@ -6,7 +6,8 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ServeurG4_EJB"/>
 	<classpathentry exported="true" kind="lib" path="C:/src/wildfly-30.0.0.Final/bin/client/jboss-client.jar"/>
+	<classpathentry exported="true" kind="src" path="/ServeurG4_EJB"/>
+	<classpathentry kind="lib" path="C:/src/wildfly-30.0.0.Final/modules/system/layers/base/jakarta/ejb/api/main/jakarta.ejb-api-4.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

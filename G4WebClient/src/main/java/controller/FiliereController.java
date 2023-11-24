@@ -14,10 +14,11 @@ import entities.Filiere;
 /**
  * Servlet implementation class FiliereController
  */
+@WebServlet("/FiliereController")
 public class FiliereController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-	@EJB
+	@EJB(beanName = "FILIERE_EJB")
 	private IDaoLocal<Filiere> dao;
     /**
      * @see HttpServlet#HttpServlet()
@@ -30,18 +31,80 @@ public class FiliereController extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		dao.create(new Filiere("AB","Test"));
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		String action = request.getParameter("action");
+		if(action==null) {
+			request.setAttribute("listFilieres", dao.findAll());
+		
+			request.getRequestDispatcher("indexF.jsp").forward(request, response);
+		}
+		
+		else {
+			if(action.equalsIgnoreCase("add")) {
+				
+				request.getRequestDispatcher("addFiliere.jsp").forward(request, response);
+			}
+			
+			else if(action.equalsIgnoreCase("update")) {
+			
+				
+				int filiereId = Integer.parseInt(request.getParameter("id"));
+				request.setAttribute("filiere", dao.findById(filiereId));
+				
+			    request.getRequestDispatcher("editFiliere.jsp").forward(request, response);
+			    
+			}
+			
+			else if(action.equalsIgnoreCase("delete")) {
+				String idString = request.getParameter("id");
+			    int id = Integer.parseInt(idString);
+			    dao.delete(dao.findById(id));
+			    response.sendRedirect("FiliereController");
+			   
+				
+		
+			}
+		}
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	String action = request.getParameter("action");
+	if(action.equalsIgnoreCase("add")) {
+		try {
+			
+		Filiere filiere = new Filiere();
+		filiere.setName(request.getParameter(("name")));
+		filiere.setCode(request.getParameter(("code")));
+		
+		
+		dao.create(filiere);
+		response.sendRedirect("FiliereController");
+		}
+		catch(Exception e) {
+			request.setAttribute("error", e.getMessage());
+			request.getRequestDispatcher("addFiliere.jsp").forward(request, response);
+		}
 	}
+
+		else if(action.equalsIgnoreCase("update")) {
+			try {
+				
+			int id=Integer.parseInt(request.getParameter("id"));
+			
+			Filiere filiere = dao.findById(id);
+			filiere.setName(request.getParameter(("name")));
+			filiere.setCode(request.getParameter(("code")));
+			dao.update(filiere);
+			response.sendRedirect(request.getContextPath() + "/FiliereController");
+			}
+			catch(Exception e) {
+				request.setAttribute("error", e.getMessage());
+				request.getRequestDispatcher("editFiliere.jsp").forward(request, response);
+			}
+	}
+
+
+}
 
 }
